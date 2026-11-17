@@ -1,0 +1,292 @@
+
+import React, { useState } from 'react';
+
+import {
+  View,
+  Text,
+  TextInput,
+  Button,
+  StyleSheet,
+  Alert,
+  Keyboard
+} from 'react-native';
+
+export default function App() {
+
+  const [nome, setNome] = useState('');
+  const [nota1, setNota1] = useState('');
+  const [nota2, setNota2] = useState('');
+  const [nota3, setNota3] = useState('');
+
+  const [media, setMedia] = useState(null);
+  const [situacao, setSituacao] = useState('');
+
+  function calcularMedia() {
+
+    Keyboard.dismiss();
+
+    // Verificar campos vazios
+    if (
+      nome.trim() === '' ||
+      nota1.trim() === '' ||
+      nota2.trim() === '' ||
+      nota3.trim() === ''
+    ) {
+      Alert.alert(
+        'Atenção',
+        'Preencha todos os campos!'
+      );
+
+      setMedia(null);
+      setSituacao('');
+      return;
+    }
+
+    // Converter as notas para números
+    const n1 = Number(nota1.replace(',', '.'));
+    const n2 = Number(nota2.replace(',', '.'));
+    const n3 = Number(nota3.replace(',', '.'));
+
+    // Validar notas entre 0 e 10
+    if (
+      !Number.isFinite(n1) ||
+      !Number.isFinite(n2) ||
+      !Number.isFinite(n3) ||
+      n1 < 0 || n1 > 10 ||
+      n2 < 0 || n2 > 10 ||
+      n3 < 0 || n3 > 10
+    ) {
+      Alert.alert(
+        'Notas inválidas',
+        'Digite notas entre 0 e 10.'
+      );
+
+      setMedia(null);
+      setSituacao('');
+      return;
+    }
+
+    // Calcular média aritmética
+    const resultado = (n1 + n2 + n3) / 3;
+
+    // Verificar aprovação
+    if (resultado >= 7) {
+      setSituacao('Aprovado');
+    } else {
+      setSituacao('Reprovado');
+    }
+
+    setMedia(resultado.toFixed(1));
+  }
+
+  return (
+    <View style={styles.container}>
+
+      <Text style={styles.titulo}>
+        Sistema de Média Escolar
+      </Text>
+
+      <Text style={styles.subtitulo}>
+        Consulte o desempenho do estudante
+      </Text>
+
+      <View style={styles.card}>
+
+        <Text style={styles.label}>
+          Nome do estudante:
+        </Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Digite o nome"
+          value={nome}
+          onChangeText={setNome}
+        />
+
+        <Text style={styles.label}>
+          Primeira nota:
+        </Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Digite a primeira nota"
+          keyboardType="decimal-pad"
+          value={nota1}
+          onChangeText={setNota1}
+        />
+
+        <Text style={styles.label}>
+          Segunda nota:
+        </Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Digite a segunda nota"
+          keyboardType="decimal-pad"
+          value={nota2}
+          onChangeText={setNota2}
+        />
+
+        <Text style={styles.label}>
+          Terceira nota:
+        </Text>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Digite a terceira nota"
+          keyboardType="decimal-pad"
+          value={nota3}
+          onChangeText={setNota3}
+        />
+
+        <View style={styles.botao}>
+          <Button
+            title="Calcular média"
+            color="#2457A7"
+            onPress={calcularMedia}
+          />
+        </View>
+
+        {media !== null && (
+          <View style={styles.resultado}>
+
+            <Text style={styles.textoResultado}>
+              Resultado do estudante:
+            </Text>
+
+            <Text style={styles.nomeResultado}>
+              {nome}
+            </Text>
+
+            <Text style={styles.valor}>
+              Média: {media.replace('.', ',')}
+            </Text>
+
+            <Text
+              style={[
+                styles.situacao,
+                situacao === 'Aprovado'
+                  ? styles.aprovado
+                  : styles.reprovado
+              ]}
+            >
+              {situacao}
+            </Text>
+
+          </View>
+        )}
+
+      </View>
+
+      <Text style={styles.rodape}>
+        Média mínima para aprovação: 7,0
+      </Text>
+
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+
+  container: {
+    flex: 1,
+    backgroundColor: '#EDF2FA',
+    justifyContent: 'center',
+    padding: 22
+  },
+
+  titulo: {
+    fontSize: 26,
+    fontWeight: 'bold',
+    color: '#183B70',
+    textAlign: 'center',
+    marginBottom: 10
+  },
+
+  subtitulo: {
+    fontSize: 15,
+    color: '#64748B',
+    textAlign: 'center',
+    marginBottom: 22
+  },
+
+  card: {
+    backgroundColor: '#FFFFFF',
+    padding: 20,
+    borderRadius: 15,
+    elevation: 4
+  },
+
+  label: {
+    fontSize: 15,
+    fontWeight: 'bold',
+    color: '#263B59',
+    marginBottom: 7
+  },
+
+  input: {
+    backgroundColor: '#F5F7FB',
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    borderRadius: 9,
+    padding: 12,
+    fontSize: 16,
+    marginBottom: 15,
+    color: '#263B59'
+  },
+
+  botao: {
+    borderRadius: 9,
+    overflow: 'hidden',
+    marginTop: 5
+  },
+
+  resultado: {
+    backgroundColor: '#EDF2FA',
+    padding: 18,
+    borderRadius: 12,
+    alignItems: 'center',
+    marginTop: 22
+  },
+
+  textoResultado: {
+    fontSize: 15,
+    color: '#475569'
+  },
+
+  nomeResultado: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#183B70',
+    marginTop: 5
+  },
+
+  valor: {
+    fontSize: 27,
+    fontWeight: 'bold',
+    color: '#2457A7',
+    marginTop: 10
+  },
+
+  situacao: {
+    fontSize: 21,
+    fontWeight: 'bold',
+    marginTop: 8
+  },
+
+  aprovado: {
+    color: '#168447'
+  },
+
+  reprovado: {
+    color: '#D43B3B'
+  },
+
+  rodape: {
+    fontSize: 12,
+    color: '#64748B',
+    textAlign: 'center',
+    marginTop: 20
+  }
+
+});
